@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="st" format="json">
+      <types:shape format="weave" example="examples/empInfo.json"><![CDATA[%dw 2.0
+
+type st = Array<{|  StudentId__c: String,   StudentLocation__c: String,   Id: String,   Student_Name__c: String,   StudentSem__c: String,   "type": String,   Name: String|}> {"example": "[{\\\"StudentId__c\\\":\\\"102.0\\\",\\\"StudentLocation__c\\\":\\\"Guntur\\\",\\\"Id\\\":\\\"a00aj00000JRaviAAD\\\",\\\"Student_Name__c\\\":\\\"Hanup Kumar Talasila\\\",\\\"StudentSem__c\\\":\\\"8\\\",\\\"type\\\":\\\"Student__c\\\",\\\"Name\\\":\\\"a00aj00000JRavi\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#1e662ac4-68a7-4091-aa25-bb8f86e7b55d"/>
+  <types:enrichment select="#bb4676b1-cf8e-422e-bc90-ce30deb0ae34"/>
+  <types:enrichment select="#3d5ec723-f6f8-46c6-8616-7e185ce184b4"/>
+</types:mule>

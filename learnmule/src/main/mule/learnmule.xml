@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="learnmuleFlow" doc:id="f385c8c4-a37f-4ec9-a5bd-c1399b20ad51" >
+		<http:listener doc:name="Listener" doc:id="dbdd2c65-4384-41cc-98aa-a7af5be04d2d" config-ref="HTTP_Listener_config" path="/poc"/>
+		<ee:transform doc:name="Transform Message" doc:id="02d3793b-c2b8-4e01-bd56-919a51dcdd66" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[{
+	Student_Name__c: payload.StudentName,
+	StudentId__c: payload.StudentID,
+	StudentLocation__c: payload.StudentLocation,
+	StudentSem__c: payload.StudentSemester
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:create doc:name="Create" doc:id="64755567-ecfc-40d0-817c-cd98581e498e" config-ref="Salesforce_Config" type="Student__c"/>
+		<ee:transform doc:name="Transform Message" doc:id="247f8acb-7cff-4b7d-8276-cea661ba0717" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="learnmuleFlow1" doc:id="2205782a-748b-444d-a264-36b0cb5c6744" >
+		<salesforce:subscribe-topic-listener doc:name="Subscribe topic listener" doc:id="332ea3b2-34dc-4e2d-8e24-45615c63a6ba" config-ref="Salesforce_Config" topic="StudentTopic"/>
+		<ee:transform doc:name="Transform Message" doc:id="c08042ce-c8d0-4f87-831d-9b9c53d20f78" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

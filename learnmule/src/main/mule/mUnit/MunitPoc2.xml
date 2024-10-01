@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="MunitPoc2Flow" doc:id="a79c2695-1f45-4aff-a0ae-f37cd4348b0d" >
+		<http:listener doc:name="Listener" doc:id="d2b9d4ff-e0eb-47b7-a55c-110077ebeae2" config-ref="HTTP_Listener_config" path="/mUnitPoc2/{uriParam}"/>
+		<ee:transform doc:name="Transform Message" doc:id="3d5ec723-f6f8-46c6-8616-7e185ce184b4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="extractUri" ><![CDATA[attributes.uriParams.uriParam]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Request" doc:id="2dd86262-6417-4060-9e9e-abb3e4995b87" config-ref="HTTP_Request_configuration" path="/api/users/{uriParam}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"uriParam" : vars.extractUri
+}]]]></http:uri-params>
+		</http:request>
+		<choice doc:name="Choice" doc:id="6ae1191d-ad92-4bcd-a1f9-d6aeefaf660d" >
+			<when expression="#[payload.data.id==2]">
+				<ee:transform doc:name="Transform Message" doc:id="417304b3-4316-4c90-b9e3-0cbe93f49f17" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression="#[payload.data.id==3]">
+				<ee:transform doc:name="Transform Message" doc:id="4cabf484-0007-4e79-a2b1-1926743c4808" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="f504bf08-71c2-4618-84ca-a3eba8445be2" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="f791abf7-0e3c-4a7a-9a80-92b74bcf0e19" message="#[payload]"/>
+	</flow>
+</mule>

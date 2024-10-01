@@ -1,0 +1,12 @@
+httpInvoke:
+  host : "localhost"
+  port : "8081"
+  readTimeOut : "3000"
+  basePath : "/learn"
+
+oracledatabase:
+  host: "localhost"
+  port: "1521"
+  userName: "wmuser"
+  password: "![iqv8rTmmjAg=]"
+  ServiceName: "XE"

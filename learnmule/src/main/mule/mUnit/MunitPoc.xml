@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="MunitPocFlow" doc:id="6f7662ed-945e-48eb-92e8-fab26647aa18" >
+		<http:listener doc:name="Listener" doc:id="4a0949dc-9080-42bf-a96a-764c1391428a" config-ref="HTTP_Listener_config" path="/munit"/>
+		<ee:transform doc:name="Transform Message" doc:id="bb4676b1-cf8e-422e-bc90-ce30deb0ae34" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="queryParams1" ><![CDATA[attributes.queryParams.params1]]></ee:set-variable>
+				<ee:set-variable variableName="queryParams2" ><![CDATA[attributes.queryParams.params2]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="8634e271-59a8-4de2-afe0-ab86fb4738e0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	 "result": (vars.queryParams1 as Number + vars.queryParams2 as Number)
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="dd2f2fb6-dca4-4e74-981c-d732d974bd26" />
+	</flow>
+</mule>

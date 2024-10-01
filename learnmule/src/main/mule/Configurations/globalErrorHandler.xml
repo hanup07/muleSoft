@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="globalErrorHandlerError_Handler" doc:id="f0ab2185-518c-4f1a-a4db-cd7875f62c03" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9dafc22e-c517-49af-aaf4-922dddaf0f34" type="HTTP:BAD_GATEWAY, HTTP:CONNECTIVITY">
+			<ee:transform doc:name="Transform Message" doc:id="4173d313-b44d-48b8-b2ee-634f49a69c10" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":"failure",
+	"error":error.errorType,
+	"description":error.detailedDescription
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger" doc:id="efc223bb-dab6-4a8a-b805-f2da32dc83f9" message="#[payload]" />
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3b268068-50e1-4e8a-aae4-41de88a5a4f4" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="1fe6ad1e-19dc-41f4-b9f6-57f91ebcc872">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"status":"failure",
+	"error":error.errorType,
+	"description":error.detailedDescription
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Logger" doc:id="71e2594f-d72d-4f16-aeea-d5fa512edef5" message="#[payload]" />
+		</on-error-continue>
+	</error-handler>
+</mule>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="MunitPoc2-test-suite.xml" >
+		<munit:parameterizations >
+			<munit:parameterization name="paramID1" >
+				<munit:parameters >
+					<munit:parameter propertyName="uriParam" value="2" />
+					<munit:parameter propertyName="rewResponse" value='#[%dw 2.0 output application/json --- readUrl("classpath://params/rewResponse2.json")]' />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="paramID2" >
+				<munit:parameters >
+					<munit:parameter propertyName="uriParam" value="3" />
+					<munit:parameter propertyName="rewResponse" value='#[%dw 2.0 output application/json --- readUrl("classpath://params/rewResponse3.json")]' />
+				</munit:parameters>
+			</munit:parameterization>
+			<munit:parameterization name="paramID3" >
+				<munit:parameters >
+					<munit:parameter propertyName="uriParam" value="4" />
+					<munit:parameter propertyName="rewResponse" value='#[%dw 2.0 output application/json --- readUrl("classpath://params/rewResponse4.json")]' />
+				</munit:parameters>
+			</munit:parameterization>
+		</munit:parameterizations>
+	</munit:config>
+	<munit:test name="MunitPoc2-test-suite-MunitPoc2FlowTest" doc:id="ea0686e7-a9d3-43dc-bf13-7a4627dbe9dd" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="98234593-3ae5-436d-a37a-c2278955d52b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="2dd86262-6417-4060-9e9e-abb3e4995b87" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="${rewResponse}" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="319202f9-87de-4f7c-8b63-8da50c089c87" >
+				<munit:attributes value="#[{uriParams:{uriParam: Mule::p('uriParam')}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to MunitPoc2Flow" doc:id="b48b9977-9a82-4e97-94fa-284fa6aec276" name="MunitPoc2Flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="923e5dd4-b82f-46a9-9b95-52e802c075ba" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

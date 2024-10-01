@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="MunitPoc1Flow" doc:id="d296d881-5d7a-436d-b7db-2c05a8bc62f1" >
+		<http:listener doc:name="Listener" doc:id="b8249b44-038c-4274-a2b0-729665456243" config-ref="HTTP_Listener_config" path="/mUnitPoc1"/>
+		<ee:transform doc:name="Transform Message" doc:id="385abb12-3173-463c-b137-a928377574f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"name":attributes.queryParams.name,
+	"job":attributes.queryParams.job
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="58b6dd97-a010-497b-88c0-ddf63706054e" config-ref="HTTP_Request_configuration" path="/api/users"/>
+		<ee:transform doc:name="Transform Message" doc:id="9f2f2f75-b9f8-461a-8b4e-d9debd6c4026" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="bbd22378-a217-449e-8ae4-a21c9aff155b" message="#[payload]"/>
+		<error-handler ref="globalErrorHandlerError_Handler" />
+	</flow>
+</mule>

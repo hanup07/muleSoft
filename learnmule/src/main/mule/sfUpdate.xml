@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="sfUpdateFlow" doc:id="da4cecd0-3833-41e4-9142-8f24ae46e0d9" >
+		<http:listener doc:name="Listener" doc:id="d06df1be-349c-4d02-bd35-2dbf06107aea" config-ref="HTTP_Listener_config" path="/upsert"/>
+		<ee:transform doc:name="Transform Message" doc:id="7087d9b2-aca2-4e60-b372-856de5e18735">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+	Student_Name__c: payload.StudentName,
+	StudentId__c: payload.StudentID,
+	StudentLocation__c: payload.StudentLocation,
+	StudentSem__c: payload.StudentSemester
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert doc:name="Upsert" doc:id="ba0469ba-1803-419c-9c27-25244446a565" config-ref="Salesforce_Config" objectType="Student__c" externalIdFieldName="StudentId__c"/>
+		<ee:transform doc:name="Transform Message" doc:id="7acfc82e-74e9-4056-90dd-231dd6bb2607" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="sfUpdateFlow1" doc:id="10a3eb27-af7f-49c2-aa21-f7ea180f4adb" >
+		<http:listener doc:name="Listener" doc:id="dc6de895-3681-446c-b6d5-ae45bbe2a972" config-ref="HTTP_Listener_config" path="/QueryAndupdate"/>
+		<set-variable value="#[attributes.queryParams.filterId]" doc:name="Set Variable" doc:id="5121f0f5-a2c4-4278-b7d8-f485cb79915b" variableName="setFilterId"/>
+		<salesforce:query doc:name="Query" doc:id="b753069d-b615-4083-9d26-2bb1bf6eaf29" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, StudentId__c, StudentLocation__c,Student_Name__c,StudentSem__c FROM Student__c]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="78d9621a-4b87-413d-bd79-befcf7f3ad7a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload filter (item,index) -> item.StudentId__c == vars.setFilterId]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="7135805d-ecfc-4544-9f43-1ef50ea8bd3a" >
+			<when expression='#[payload != ""]'>
+				<ee:transform doc:name="Transform Message" doc:id="1e662ac4-68a7-4091-aa25-bb8f86e7b55d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item,index)-> {
+	Id : item.Id ,
+	StudentId__c :item.StudentId__c as Number,
+	StudentLocation__c : item.StudentLocation__c as String ,
+	Student_Name__c : (item.Student_Name__c++" Hanup") as String,
+	StudentSem__c : item.StudentSem__c
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<salesforce:update type="Student__c" doc:name="Update" doc:id="6d32bcc7-2431-4ce4-82ac-feb7892b81d3" config-ref="Salesforce_Config"/>
+				<ee:transform doc:name="Transform Message" doc:id="c5f52ca9-91da-4ad9-b2f1-d80b8f55081b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload	]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="d444a569-9d9c-458d-952a-7fe2be85490b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="sfUpdateFlow2" doc:id="d9788f9a-4db6-4b09-bbb9-96d7618c8a33" >
+		<http:listener doc:name="Listener" doc:id="a224a51f-05d8-4113-9b1d-bf69a99ac80b" config-ref="HTTP_Listener_config" path="/queryQueryAllAndDelete"/>
+		<set-variable value="#[attributes.queryParams.choice]" doc:name="Set Variable" doc:id="2b38179c-107b-45d0-8e51-c94e14d95fea" variableName="extractChoice"/>
+		<set-variable value="#[attributes.queryParams.StudentID]" doc:name="Set Variable1" doc:id="6dce68c1-26ad-4776-b827-b6ad990df796" variableName="StudentID" />
+		<salesforce:get-user-info doc:name="Get user info" doc:id="759ff934-947d-4867-875b-0ecb2128ff53" config-ref="Salesforce_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="039e35ac-5bb2-466f-ae10-6e51224d5b70" message="#[%dw 2.0&#10;output application/json&#10;---&#10;payload]"/>
+		<choice doc:name="Choice" doc:id="585e8a05-af8f-4e82-a6d5-0c860e4c21c9" >
+			<when expression='#[vars.extractChoice=="1"]'>
+				<salesforce:query doc:name="Query" doc:id="a42ec181-c379-4505-aa81-f4b7aebfa285" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, StudentId__c, StudentLocation__c,Student_Name__c,StudentSem__c FROM Student__c]]></salesforce:salesforce-query>
+				</salesforce:query>
+				<ee:transform doc:name="Transform Message1" doc:id="784f9457-5996-4920-83b3-5ffa84d7bafa">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger1" doc:id="2c220159-848e-413e-9886-3afb3a32ca49" message="#[payload]" />
+				<salesforce:query-all doc:name="Query all" doc:id="0eaf6463-0947-4927-824a-d387f820a6f2" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, StudentId__c, StudentLocation__c,Student_Name__c,StudentSem__c FROM Student__c]]></salesforce:salesforce-query>
+				</salesforce:query-all>
+				<ee:transform doc:name="Transform Message" doc:id="cb601416-c4fc-4b31-abb6-10f27dbd5da0">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="dbebe5e3-7474-444a-853e-e253db449bdb" message="#[payload]" />
+			</when>
+			<when expression='#[vars.extractChoice=="2"]'>
+				<salesforce:query doc:name="Query" doc:id="f5f0af1c-2869-455a-9269-7c94eeedd0ae" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query ><![CDATA[SELECT Id, Name, StudentId__c, StudentLocation__c,Student_Name__c,StudentSem__c FROM Student__c where StudentId__c = :StudentID]]></salesforce:salesforce-query>
+					<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	StudentID : vars.StudentID
+}]]]></salesforce:parameters>
+				</salesforce:query>
+				<ee:transform doc:name="Transform Message" doc:id="868e548a-91d9-42d0-a70c-5d14e14d867d">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<salesforce:delete doc:name="Delete" doc:id="1b857e92-d363-4a78-8389-7394a68f2364" config-ref="Salesforce_Config">
+					<salesforce:ids ><![CDATA[#[payload.Id]]]></salesforce:ids>
+				</salesforce:delete>
+				<ee:transform doc:name="Transform Message" doc:id="54aac6e1-d263-46c3-b6f0-9d4fdff5aa5c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+
+				
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="98ce5ca3-2afd-46b1-9e3c-200d299c694b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
