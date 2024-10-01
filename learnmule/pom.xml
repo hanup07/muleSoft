@@ -16,6 +16,48 @@
 		<mule.maven.plugin.version>4.2.0</mule.maven.plugin.version>
 		<munit.version>3.2.1</munit.version>
 	</properties>
+<profiles>
+		<profile>
+			<id>development</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mule.tools.maven</groupId>
+						<artifactId>mule-maven-plugin</artifactId>
+						<version>${mule.maven.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<cloudHubDeployment>
+								<uri>https://anypoint.mulesoft.com</uri>
+								<applicationName>learnmulesoft-deve</applicationName>
+								<environment>development</environment>
+							</cloudHubDeployment>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>Sandbox</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.mule.tools.maven</groupId>
+						<artifactId>mule-maven-plugin</artifactId>
+						<version>${mule.maven.plugin.version}</version>
+						<extensions>true</extensions>
+						<configuration>
+							<cloudHubDeployment>
+								<uri>https://anypoint.mulesoft.com</uri>
+								<applicationName>learnmulesoft-qa</applicationName>
+								<environment>Sandbox</environment>
+							</cloudHubDeployment>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -70,13 +112,12 @@
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
 						<muleVersion>${app.runtime}</muleVersion>
-						<username>hanupkumar0926</username>
-						<password>Hanup007@</password>
-						<applicationName>learnmule</applicationName>
-						<environment>Sandbox</environment>
+						<username>${username}</username>
+						<password>${password}</password>
 						<region>us-east-1</region>
 						<workers>1</workers>
 						<workerType>MICRO</workerType>
+						<server>credentialsDetails</server>
 						<properties>
 							<http.port>8081</http.port>
 						</properties>
