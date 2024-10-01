@@ -1,0 +1,18 @@
+#%RAML 1.0 ResourceType
+post?:
+  is:
+    - errorResponseTraits: {errorCode: 400}
+    - errorResponseTraits: {errorCode: 500}
+    - successResponseTraits: {successCode: 200}
+
+  body:
+    type: StudentDataType []
+
+            
+put?:
+  is:
+    - errorResponseTraits: {errorCode: 400}
+    - successResponseTraits: {successCode: 200}
+
+  body:
+    type: StudentDataType []

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="retrieveStudentInformation-flow" doc:id="6811df13-4380-4876-b590-6e31579b1022" >
+		<logger level="INFO" doc:name="Logger" doc:id="ff5cd7f4-1066-4f3a-b48d-11e4da4985cd" />
+		<ee:transform doc:name="Transform Message" doc:id="f9cf1414-286e-4bbb-8224-dc97ecdbe1ef" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	studentname: "student1",
+	studentid: 101,
+	studentaddress: "addr1",
+	studentphone: "1234567899",
+	studentactive: "A",
+	studentyear: 2013,
+	studentsemester: 6
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="66fbd222-e6bf-46fc-9165-b2be5d85b4b0" />
+	</flow>
+</mule>

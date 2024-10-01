@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="insertStudentInformation-flow" doc:id="029ec0e3-044f-4858-8215-1bfcca9c5110" >
+		<logger level="INFO" doc:name="Logger" doc:id="307643b1-bc1f-42de-be9f-f587f603793b" />
+		<ee:transform doc:name="Transform Message" doc:id="9b12a8ed-9a51-4015-97bf-2b96bf91eafe" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	studentname: "student1",
+	studentid: 101,
+	studentaddress: "addr1",
+	studentphone: "1234567899",
+	studentactive: "A",
+	studentyear: 2013,
+	studentsemester: 6
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b166c256-4e23-49ea-b02b-ffa111d5d9b3" />
+	</flow>
+	<flow name="updateStudentInformation-flow" doc:id="cf2436cf-6537-4c57-a717-73ec51b3fe41" >
+		<logger level="INFO" doc:name="Logger" doc:id="d6398780-00f9-442e-8140-0981ef1563e4" />
+		<ee:transform doc:name="Transform Message" doc:id="aa8992f6-1f4c-435e-924f-02588924fa1c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	studentname: "student1",
+	studentid: 101,
+	studentaddress: "addr1",
+	studentphone: "1234567899",
+	studentactive: "A",
+	studentyear: 2013,
+	studentsemester: 6
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="e1afcf9e-7618-41b2-847d-45042f0e6d07" />
+	</flow>
+</mule>

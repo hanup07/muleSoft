@@ -1,0 +1,58 @@
+#%RAML 1.0
+title: StudentFile
+baseUri: http://localhost:8081/studentapi
+version: 1.0.0
+mediaType: 
+- application/json
+
+types:
+  
+  StudentDataType: !include /exchange_modules/8e3d92e0-bb79-411f-9fbe-e06b50a4ab2a/studentdatatype/1.0.0/StudentDataType.raml
+  SuccessExample: !include /exchange_modules/8e3d92e0-bb79-411f-9fbe-e06b50a4ab2a/studentdatatype/1.0.0/SuccessDataType.raml
+  ErrorExample: !include /exchange_modules/8e3d92e0-bb79-411f-9fbe-e06b50a4ab2a/studentdatatype/1.0.0/ErrrorDataType.raml
+
+traits:
+  errorResponseTraits: !include /traits/ErrorResponseTrait.raml
+  successResponseTraits: !include /traits/SuccessResponseTrait.raml
+
+resourceTypes:
+  getStudentDetails: !include /resourceTypes/getStudentDetails.raml
+  updateStuDetails: !include /resourceTypes/updateStudentDetails.raml
+
+/createstudent:
+  displayName: createStudent
+  description: Method created for Student Registration Information
+  
+  type: updateStuDetails
+  post:
+  put:
+                        
+
+/retrievestudent:
+  displayName: retrieveStudent
+  description: The method is used to retrieve student information
+
+  type: getStudentDetails    
+  get:
+    queryParameters:
+      studentID:
+        displayName: retrieveStudentID
+        description: Retrieve Student Information by Student ID
+        type: string
+        required: true
+      
+      studentName:
+        displayName: retrieveStudentName
+        description: Retrieve Student Name Query Parameter
+        type: string
+        required: false
+
+                  
+/deletestudent:
+  displayName: deleteStudent
+  description: Delete Student Information
+  
+  /{uriParameter}:
+    type: getStudentDetails
+    get:
+      

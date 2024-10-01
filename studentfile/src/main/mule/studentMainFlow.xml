@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+
+	
+	<flow name="learnramlspec-main">
+		<http:listener
+			config-ref="learnramlspec-httpListenerConfig" path="/api/*">
+			<http:response
+				statusCode="#[vars.httpStatus default 200]">
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[vars.httpStatus default 500]">
+				<http:body><![CDATA[#[payload]]]></http:body>
+				<http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:router config-ref="learnramlspec-config" />
+		<error-handler>
+			<on-error-propagate type="APIKIT:BAD_REQUEST">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">400
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate type="APIKIT:NOT_FOUND">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">404
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate
+				type="APIKIT:METHOD_NOT_ALLOWED">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">405
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">406
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate
+				type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">415
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">501
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="learnramlspec-console">
+		<http:listener
+			config-ref="learnramlspec-httpListenerConfig" path="/console/*">
+			<http:response
+				statusCode="#[vars.httpStatus default 200]">
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:response>
+			<http:error-response
+				statusCode="#[vars.httpStatus default 500]">
+				<http:body>#[payload]</http:body>
+				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+			</http:error-response>
+		</http:listener>
+		<apikit:console config-ref="learnramlspec-config" />
+		<error-handler>
+			<on-error-propagate type="APIKIT:NOT_FOUND">
+				<ee:transform doc:name="Transform Message">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="httpStatus">404
+						</ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow
+		name="put:\createstudent:application\json:learnramlspec-config">
+		<logger level="INFO" doc:name="Start Logger" doc:id="c7de4538-1c4b-4cec-98f8-02f36ff9a20e" message="#['\n'] -- Start of the Insert Flow --"/>
+		<flow-ref doc:name="insertStudentInformation-flow" doc:id="3190921e-84b8-4337-9ffa-a1acbd51211c" name="insertStudentInformation-flow"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="c6b8949f-3ca1-413e-9f39-a5cf119e4df8" message="#['\n'] -- End of the Insert Flow --"/>
+	</flow>
+	<flow
+		name="get:\deletestudent\(uriParameter):learnramlspec-config">
+		<logger level="INFO" doc:name="Start Logger" doc:id="bb29d2e5-a24e-4665-a4e3-85b4390a41d5" message="#['\n'] -- Start of the Delete Flow --" />
+		<flow-ref doc:name="deleteStudentInformation-flow" doc:id="26c89643-54a7-40b8-bd0e-fcb80609e161" name="deleteStudentInformation-flow"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="711a192d-9644-4298-9120-e9755a272687" message="#['\n'] -- End of the Delete Flow --" />
+	</flow>
+	<flow name="get:\retrievestudent:learnramlspec-config">
+		<logger level="INFO" doc:name="Start Logger" doc:id="179bd165-cc44-461d-ad3a-612a8e40f080" message="#['\n'] -- Start of the Retrieve Flow --" />
+		<flow-ref doc:name="retrieveStudentInformation-flow" doc:id="39bf578d-d269-44aa-9329-8c39c0c1b6a8" name="retrieveStudentInformation-flow"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="e61822d2-8798-4b5d-9882-76aa47a97d03" message="#['\n'] -- End of the Retrieve Flow --" />
+	</flow>
+	<flow
+		name="post:\createstudent:application\json:learnramlspec-config">
+		<logger level="INFO" doc:name="Start Logger" doc:id="44755fce-bced-432a-a88b-be4e9d6473dd" message="#['\n'] -- Start of the Update Flow --" />
+		<flow-ref doc:name="updateStudentInformation-flow" doc:id="de875339-8b77-4982-b934-8ef14319f770" name="updateStudentInformation-flow"/>
+		<logger level="INFO" doc:name="End Logger" doc:id="96a90076-5d67-4607-bea7-277b12bc2535" message="#['\n'] -- End of the Update Flow --" />
+	</flow>
+</mule>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="deleteStudentInformation-flow" doc:id="fd5ea8f5-6a49-4e5b-9b13-3a2dd2135f59" >
+		<logger level="INFO" doc:name="Logger" doc:id="18a5531f-861f-4b54-87b8-b311e54c9e9d" />
+		<ee:transform doc:name="retrieveStudentData" doc:id="d749c2e9-fa52-40d9-baa9-3a4d07f3f10e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[attributes.uriParams.'uriParameter']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="6e333af3-c59d-4e7a-8878-3da65886ebfb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	studentname: "student1",
+	studentid: 101,
+	studentaddress: "addr1",
+	studentphone: "1234567899",
+	studentactive: "A",
+	studentyear: 2013,
+	studentsemester: 6
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="13051d3b-1815-4769-ba1c-dd5523ae5bd7" />
+	</flow>
+</mule>
