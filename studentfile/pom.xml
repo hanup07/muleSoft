@@ -14,7 +14,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<app.runtime>4.7.3</app.runtime>
-		<mule.maven.plugin.version>4.2.0</mule.maven.plugin.version>
+		<mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -102,7 +102,7 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>3.7.1</version>
 				<configuration>
-					<deploymentTimeout>5000</deploymentTimeout>
+					<deploymentTimeout>100000</deploymentTimeout>
 					<!-- in seconds -->
 				</configuration>
 			</plugin>
