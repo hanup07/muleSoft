@@ -86,6 +86,7 @@
 						<muleVersion>${app.runtime}</muleVersion>
 						<username>${username}</username>
 						<password>${password}</password>
+						<businessGroup>Own</businessGroup>
 						<region>us-east-1</region>
 						<workers>1</workers>
 						<workerType>MICRO</workerType>
