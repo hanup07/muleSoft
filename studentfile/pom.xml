@@ -97,15 +97,7 @@
 					</cloudHubDeployment>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.mule.tools.maven</groupId>
-				<artifactId>mule-maven-plugin</artifactId>
-				<version>3.7.1</version>
-				<configuration>
-					<deploymentTimeout>100000</deploymentTimeout>
-					<!-- in seconds -->
-				</configuration>
-			</plugin>
+			
 		</plugins>
 	</build>
 
